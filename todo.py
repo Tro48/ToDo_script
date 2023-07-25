@@ -11,10 +11,11 @@ else:
 if len(sys.argv) == 1:
     print("Это Help. Что бы добавить задачу введите add 'Текст задачи в ковычках'.")
     sys.exit(1)
-
-if len(sys.argv) < 3:  # Проверка на пустую строку после add
+elif len(sys.argv) < 3:  # Проверка на пустую строку после add
     print("Ошибка! Вы не ввели задание!")
     sys.exit(1)
+
+
 else:
     commands = sys.argv[1]
 
