@@ -10,19 +10,17 @@ def add_line(text):
 
 
 def write_entries():
-    with open('list_of_entries.txt', encoding='utf-8') as entries:
-        print('Весь список дел:' "\n" + entries.read())
+    if os.path.isfile("list_of_entries.txt"):
+        with open('list_of_entries.txt', encoding='utf-8') as entries:
+            print('Весь список дел:' "\n" + entries.read())
+    else:
+        print("Пока что нет записей...")
 
-
-if os.path.isfile("list_of_entries.txt"):
-    write_entries()
-else:
-    print("Пока что нет записей...")
 
 if len(sys.argv) == 1:
-    print("Это Help. Что бы добавить задачу введите add 'Текст задачи в ковычках'.")
+    write_entries()
     sys.exit(1)
-elif len(sys.argv) < 3:  # Проверка на пустую строку после add
+elif len(sys.argv) < 3:
     print("Ошибка! Вы не ввели задание!")
     sys.exit(1)
 
@@ -36,3 +34,4 @@ else:
         sys.exit(2)
     else:
         print("такой комманды нет!")
+        print("Что бы добавить задачу введите add 'Текст задачи в ковычках'.")
