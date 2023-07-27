@@ -1,10 +1,21 @@
 import sys
 import os
 
+
+def add_line(text):
+    with open('list_of_entries.txt', 'a+', -1, 'utf-8') as entries_add:
+        entries_add.writelines(text + "\n")
+        entries_add.close()
+    with open('list_of_entries.txt', encoding='utf-8') as entries:
+        print("Новое задание добавлено в список!")
+        print('Новый список дел:' "\n" + entries.read())
+
+
 if os.path.isfile("list_of_entries.txt"):
-    entries = open('list_of_entries.txt', encoding='utf-8')
-    print('Весь список дел:' "\n" + entries.read())
-    entries.close()
+
+    with open('list_of_entries.txt', encoding='utf-8') as entries:
+        print('Весь список дел:' "\n" + entries.read())
+
 else:
     print("Пока что нет записей...")
 
@@ -21,17 +32,9 @@ else:
 
     if commands == "add":
         entries_text = sys.argv[2]
-        entries_add = open('list_of_entries.txt', 'a+', -1, 'utf-8')
-        entries_add.writelines(entries_text + "\n")
-        entries_add.close()
-        entries = open('list_of_entries.txt', encoding='utf-8')
-        print("Новое задание добавлено в список!")
-        print('Новый список дел:' "\n" + entries.read())
-        entries.close()
-        sys.exit(1)
-
+        add_line(entries_text)
+        sys.exit(2)
     else:
         print("такой комманды нет!")
-        entries = open('list_of_entries.txt', encoding='utf-8')
-        print('Весь список дел:' "\n" + entries.read())
-        entries.close()
+        with open('list_of_entries.txt', encoding='utf-8') as entries:
+            print('Весь список дел:' "\n" + entries.read())
