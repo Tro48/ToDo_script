@@ -6,16 +6,16 @@ def add_line(text):
     with open('list_of_entries.txt', 'a+', -1, 'utf-8') as entries_add:
         entries_add.writelines(text + "\n")
         entries_add.close()
-    with open('list_of_entries.txt', encoding='utf-8') as entries:
         print("Новое задание добавлено в список!")
-        print('Новый список дел:' "\n" + entries.read())
 
 
-if os.path.isfile("list_of_entries.txt"):
-
+def write_entries():
     with open('list_of_entries.txt', encoding='utf-8') as entries:
         print('Весь список дел:' "\n" + entries.read())
 
+
+if os.path.isfile("list_of_entries.txt"):
+    write_entries()
 else:
     print("Пока что нет записей...")
 
@@ -36,5 +36,3 @@ else:
         sys.exit(2)
     else:
         print("такой комманды нет!")
-        with open('list_of_entries.txt', encoding='utf-8') as entries:
-            print('Весь список дел:' "\n" + entries.read())
