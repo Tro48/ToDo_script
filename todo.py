@@ -1,17 +1,26 @@
 import sys
 import os
 
-if os.path.isfile("list_of_entries.txt"):
-    entries = open('list_of_entries.txt', encoding='utf-8')
-    print('Весь список дел:' "\n" + entries.read())
-    entries.close()
-else:
-    print("Пока что нет записей...")
+
+def add_line(text):
+    with open('list_of_entries.txt', 'a+', -1, 'utf-8') as entries_add:
+        entries_add.writelines(text + "\n")
+        entries_add.close()
+        print("Новое задание добавлено в список!")
+
+
+def write_entries():
+    if os.path.isfile("list_of_entries.txt"):
+        with open('list_of_entries.txt', encoding='utf-8') as entries:
+            print('Весь список дел:' "\n" + entries.read())
+    else:
+        print("Пока что нет записей...")
+
 
 if len(sys.argv) == 1:
-    print("Это Help. Что бы добавить задачу введите add 'Текст задачи в ковычках'.")
+    write_entries()
     sys.exit(1)
-elif len(sys.argv) < 3:  # Проверка на пустую строку после add
+elif len(sys.argv) < 3:
     print("Ошибка! Вы не ввели задание!")
     sys.exit(1)
 
@@ -21,17 +30,8 @@ else:
 
     if commands == "add":
         entries_text = sys.argv[2]
-        entries_add = open('list_of_entries.txt', 'a+', -1, 'utf-8')
-        entries_add.writelines(entries_text + "\n")
-        entries_add.close()
-        entries = open('list_of_entries.txt', encoding='utf-8')
-        print("Новое задание добавлено в список!")
-        print('Новый список дел:' "\n" + entries.read())
-        entries.close()
-        sys.exit(1)
-
+        add_line(entries_text)
+        sys.exit(2)
     else:
         print("такой комманды нет!")
-        entries = open('list_of_entries.txt', encoding='utf-8')
-        print('Весь список дел:' "\n" + entries.read())
-        entries.close()
+        print("Что бы добавить задачу введите add 'Текст задачи в ковычках'.")
