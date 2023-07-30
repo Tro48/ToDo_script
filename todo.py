@@ -7,75 +7,68 @@ command_help = ("\nadd 'текст задачи в ковычках' - Доба�
                 "\nremove all - Удаляет все задачи из списка.")
 
 
+def todos_list():
+    with open('list_of_entries.txt', encoding='utf-8') as write_line:
+        todos = write_line.read().split('\n')
+        todos.pop(-1)
+    return todos
+
+
 def write_entries():
     if os.path.isfile("list_of_entries.txt"):
-        with open('list_of_entries.txt', encoding='utf-8') as entries:
-            print('Весь список дел:' "\n" + entries.read())
+        if os.stat('list_of_entries.txt').st_size != 0:
+            todos = todos_list()
+            todos_new = []
+            for i in todos:
+                index = todos.index(i)
+                index += 1
+                todos_new.append(str(index) + "." + i)
+            print("Весь список дел:")
+            for i in todos_new:
+                print(i)
 
-    else:
-        print("Пока что нет записей...")
+        else:
+            print("Пока что нет записей...")
 
 
 def add():
-
     entries_text = sys.argv[2]
     with open('list_of_entries.txt', 'a+', -1, 'utf-8') as entries_add:
-        number = number_lines()
-        n = str(number[-1] + 1)
-        entries_add.writelines(n + "." + entries_text + "\n")
+        entries_add.writelines(entries_text + "\n")
     print("Задача успешно добавлена!")
     sys.exit()
 
 
-def edit():
+def edit(number, text):
     if os.stat('list_of_entries.txt').st_size != 0:
-        entries_list = []
-        number = int(sys.argv[2])
-        text = str(sys.argv[3])
-        with open('list_of_entries.txt', encoding='utf-8') as lines:
-            for line in lines:
-                current_line = line[:-1]
-                entries_list.append(current_line)
-            text = str(number) + "." + text
-            number -= 1
-            entries_list[number] = text
+        todos = todos_list()
+        number = int(number) - 1
+        todos[number] = text
+        with open('list_of_entries.txt', 'w', -1, 'utf-8') as edit_line:
+            for i in todos:
+                edit_line.write(i + '\n')
 
-        with open('list_of_entries.txt', 'w', -1, 'utf-8') as new_lines:
-            for i in entries_list:
-                new_lines.writelines(i + "\n")
-        print("Задача номер " + str(number + 1) + " успешно заменена!")
+        print("ЗАДАНИЕ", number + 1, "ИЗМЕНЕНО!")
     else:
         print("НЕВЕРНАЯ КОМАНДА! В СПИСКЕ НЕТ ЗАДАЧ!")
         print(command_help)
+
     sys.exit()
 
 
-def remove():
-
+def remove(number):
     if sys.argv[2] == "all":
-        with open('list_of_entries.txt', 'w', -1, 'utf-8') as del_all:
+        with open('list_of_entries.txt', 'w', -1, 'utf-8'):
             print("Список дел очищен!")
     else:
         if os.stat('list_of_entries.txt').st_size != 0:
-            entries_list = []
-            new_entries = []
-            with open('list_of_entries.txt', encoding='utf-8') as lines:
-                for line in lines:
-                    current_line = line[:-1]
-                    entries_list.append(current_line)
-                number_line = int(sys.argv[2])
-                number_line -= 1
-                entries_list.pop(number_line)
-                for i in entries_list:
-                    index = entries_list.index(i)
-                    index += 1
-                    index = str(index)
-                    text = i.split(".")[1]
-                    new_entries.append(index + "." + text)
-            with open('list_of_entries.txt', 'w', -1, 'utf-8') as new_lines:
-                for i in new_entries:
-                    new_lines.writelines(i + "\n")
-            print("Задача номер " + str(number_line + 1) + " успешно удалена!")
+            todos = todos_list()
+            number = int(number) - 1
+            todos.pop(number)
+            with open('list_of_entries.txt', 'w', -1, 'utf-8') as edit_line:
+                for i in todos:
+                    edit_line.write(i + '\n')
+            print("Задача номер", number + 1, "успешно удалена!")
         else:
             print("НЕВЕРНАЯ КОМАНДА! В СПИСКЕ НЕТ ЗАДАЧ!")
             print(command_help)
@@ -86,25 +79,6 @@ def h():
     if sys.argv[2] == "!":
         print(command_help)
         sys.exit()
-
-
-def number_lines():
-    entries_list = []
-    list_index = []
-    if os.path.isfile("list_of_entries.txt"):
-        if os.stat('list_of_entries.txt').st_size != 0:
-            with open('list_of_entries.txt', encoding='utf-8') as lines:
-                for line in lines:
-                    current_line = line[:-1]
-                    entries_list.append(current_line)
-                for i in entries_list:
-                    index = entries_list.index(i)
-                    index += 1
-                    list_index.append(index)
-        else:
-            list_index = [0]
-
-        return list_index
 
 
 if len(sys.argv) == 1:
@@ -122,10 +96,10 @@ else:
         add()
 
     elif commands == "edit":
-        edit()
+        edit(sys.argv[2], sys.argv[3])
 
     elif commands == "remove":
-        remove()
+        remove(sys.argv[2])
 
     elif commands == "help":
         h()
