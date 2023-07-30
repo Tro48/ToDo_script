@@ -18,23 +18,21 @@ def write_entries():
     if os.path.isfile("list_of_entries.txt"):
         if os.stat('list_of_entries.txt').st_size != 0:
             todos = todos_list()
-            todos_new = []
-            for i in todos:
-                index = todos.index(i)
-                index += 1
-                todos_new.append(str(index) + "." + i)
+            index = 1
             print("Весь список дел:")
-            for i in todos_new:
-                print(i)
+            for todo in todos:
+                print(str(index) + "." + todo)
+                index += 1
 
         else:
             print("Пока что нет записей...")
+    sys.exit()
 
 
 def add():
     entries_text = sys.argv[2]
     with open('list_of_entries.txt', 'a+', -1, 'utf-8') as entries_add:
-        entries_add.writelines(entries_text + "\n")
+        entries_add.write(entries_text + "\n")
     print("Задача успешно добавлена!")
     sys.exit()
 
@@ -45,8 +43,8 @@ def edit(number, text):
         number = int(number) - 1
         todos[number] = text
         with open('list_of_entries.txt', 'w', -1, 'utf-8') as edit_line:
-            for i in todos:
-                edit_line.write(i + '\n')
+            for todo in todos:
+                edit_line.write(todo + '\n')
 
         print("ЗАДАНИЕ", number + 1, "ИЗМЕНЕНО!")
     else:
@@ -66,8 +64,8 @@ def remove(number):
             number = int(number) - 1
             todos.pop(number)
             with open('list_of_entries.txt', 'w', -1, 'utf-8') as edit_line:
-                for i in todos:
-                    edit_line.write(i + '\n')
+                for todo in todos:
+                    edit_line.write(todo + '\n')
             print("Задача номер", number + 1, "успешно удалена!")
         else:
             print("НЕВЕРНАЯ КОМАНДА! В СПИСКЕ НЕТ ЗАДАЧ!")
