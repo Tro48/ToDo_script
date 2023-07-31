@@ -31,9 +31,17 @@ def write_entries():
 
 def add():
     entries_text = sys.argv[2]
-    with open('list_of_entries.txt', 'a+', -1, 'utf-8') as entries_add:
-        entries_add.write(entries_text + "\n")
-    print("Задача успешно добавлена!")
+    todos = todos_list()
+    repeat_todo = 0
+    for todo in todos:
+        if todo == entries_text:
+            repeat_todo = 1
+    if repeat_todo == 1:
+        print("ОШИБКА! ТАКАЯ ЗАДАЧА УЖЕ СУЩЕСТВУЕТ!")
+    else:
+        with open('list_of_entries.txt', 'a+', -1, 'utf-8') as entries_add:
+            entries_add.write(entries_text + "\n")
+        print("Задача успешно добавлена!")
     sys.exit()
 
 
@@ -45,7 +53,6 @@ def edit(number, text):
         with open('list_of_entries.txt', 'w', -1, 'utf-8') as edit_line:
             for todo in todos:
                 edit_line.write(todo + '\n')
-
         print("ЗАДАНИЕ", number + 1, "ИЗМЕНЕНО!")
     else:
         print("НЕВЕРНАЯ КОМАНДА! В СПИСКЕ НЕТ ЗАДАЧ!")
@@ -59,32 +66,35 @@ def remove(number):
         with open('list_of_entries.txt', 'w', -1, 'utf-8'):
             print("Список дел очищен!")
     else:
+        todos = todos_list()
         if os.stat('list_of_entries.txt').st_size != 0:
-            todos = todos_list()
-            number = int(number) - 1
-            todos.pop(number)
-            with open('list_of_entries.txt', 'w', -1, 'utf-8') as edit_line:
-                for todo in todos:
-                    edit_line.write(todo + '\n')
-            print("Задача номер", number + 1, "успешно удалена!")
+            if len(todos) >= int(sys.argv[2]):
+                number = int(number) - 1
+                todos.pop(number)
+                with open('list_of_entries.txt', 'w', -1, 'utf-8') as edit_line:
+                    for todo in todos:
+                        edit_line.write(todo + '\n')
+                print("Задача номер", number + 1, "успешно удалена!")
+            else:
+                print("НЕВЕРНАЯ КОМАНДА! ЗАДАЧА С ТАКИМ НОМЕРОМ НЕ СУЩЕСТВУЕТ!")
+                print(command_help)
         else:
-            print("НЕВЕРНАЯ КОМАНДА! В СПИСКЕ НЕТ ЗАДАЧ!")
+            print("ОШИБКА! СПИСОК ЗАДАЧ ПУСТ!")
             print(command_help)
     sys.exit()
-
-
-def h():
-    if sys.argv[2] == "!":
-        print(command_help)
-        sys.exit()
 
 
 if len(sys.argv) == 1:
     write_entries()
     sys.exit()
 elif len(sys.argv) < 3:
-    print("НЕВЕРНАЯ КОМАНДА!")
-    print(command_help)
+    commands = sys.argv[1]
+    if commands == "help":
+        print("ПОМОЩЬ:")
+        print(command_help)
+    else:
+        print("НЕВЕРНАЯ КОМАНДA!")
+        print(command_help)
     sys.exit()
 
 
@@ -94,10 +104,19 @@ else:
         add()
 
     elif commands == "edit":
-        edit(sys.argv[2], sys.argv[3])
+        todos = todos_list()
+        if len(todos) >= int(sys.argv[2]):
+            if sys.argv[2] != sys.argv[-1]:
+                edit(sys.argv[2], sys.argv[3])
+
+            else:
+                print("НЕВЕРНАЯ КОМАНДA!")
+                print(command_help)
+
+        else:
+            print("НЕВЕРНАЯ КОМАНДA! ЗАДАЧА С ТАКИМ НОМЕРОМ НЕ СУЩЕСТВУЕТ")
+            print(command_help)
 
     elif commands == "remove":
         remove(sys.argv[2])
-
-    elif commands == "help":
-        h()
+    sys.exit()
