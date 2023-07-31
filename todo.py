@@ -26,7 +26,7 @@ def write_entries():
 
         else:
             print("Пока что нет записей...")
-    sys.exit()
+    return
 
 
 def add():
@@ -42,7 +42,7 @@ def add():
         with open('list_of_entries.txt', 'a+', -1, 'utf-8') as entries_add:
             entries_add.write(entries_text + "\n")
         print("Задача успешно добавлена!")
-    sys.exit()
+    return
 
 
 def edit(number, text):
@@ -58,7 +58,7 @@ def edit(number, text):
         print("НЕВЕРНАЯ КОМАНДА! В СПИСКЕ НЕТ ЗАДАЧ!")
         print(command_help)
 
-    sys.exit()
+    return
 
 
 def remove(number):
@@ -68,20 +68,24 @@ def remove(number):
     else:
         todos = todos_list()
         if os.stat('list_of_entries.txt').st_size != 0:
-            if len(todos) >= int(sys.argv[2]):
-                number = int(number) - 1
-                todos.pop(number)
-                with open('list_of_entries.txt', 'w', -1, 'utf-8') as edit_line:
-                    for todo in todos:
-                        edit_line.write(todo + '\n')
-                print("Задача номер", number + 1, "успешно удалена!")
+            if sys.argv[2].isdigit() == bool(True):
+                if len(todos) >= int(sys.argv[2]):
+                    number = int(number) - 1
+                    todos.pop(number)
+                    with open('list_of_entries.txt', 'w', -1, 'utf-8') as edit_line:
+                        for todo in todos:
+                            edit_line.write(todo + '\n')
+                    print("Задача номер", number + 1, "успешно удалена!")
+                else:
+                    print("НЕВЕРНАЯ КОМАНДА! ЗАДАЧА С ТАКИМ НОМЕРОМ НЕ СУЩЕСТВУЕТ!")
+                    print(command_help)
             else:
-                print("НЕВЕРНАЯ КОМАНДА! ЗАДАЧА С ТАКИМ НОМЕРОМ НЕ СУЩЕСТВУЕТ!")
+                print("НЕВЕРНАЯ КОМАНДA!")
                 print(command_help)
         else:
             print("ОШИБКА! СПИСОК ЗАДАЧ ПУСТ!")
             print(command_help)
-    sys.exit()
+    return
 
 
 if len(sys.argv) == 1:
@@ -105,16 +109,21 @@ else:
 
     elif commands == "edit":
         todos = todos_list()
-        if len(todos) >= int(sys.argv[2]):
-            if sys.argv[2] != sys.argv[-1]:
-                edit(sys.argv[2], sys.argv[3])
+        if sys.argv[2].isdigit() == bool(True):
+
+            if len(todos) >= int(sys.argv[2]):
+                if sys.argv[2] != sys.argv[-1]:
+                    edit(sys.argv[2], sys.argv[3])
+
+                else:
+                    print("НЕВЕРНАЯ КОМАНДA!")
+                    print(command_help)
 
             else:
-                print("НЕВЕРНАЯ КОМАНДA!")
+                print("НЕВЕРНАЯ КОМАНДA! ЗАДАЧА С ТАКИМ НОМЕРОМ НЕ СУЩЕСТВУЕТ")
                 print(command_help)
-
         else:
-            print("НЕВЕРНАЯ КОМАНДA! ЗАДАЧА С ТАКИМ НОМЕРОМ НЕ СУЩЕСТВУЕТ")
+            print("НЕВЕРНАЯ КОМАНДA!")
             print(command_help)
 
     elif commands == "remove":
