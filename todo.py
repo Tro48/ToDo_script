@@ -1,29 +1,58 @@
 import sys
 import os
 
+
+class TodoManager:
+
+    def __init__(self):
+        self.file_list = None
+
+    def add(self, text):
+        self.file_list.append(text)
+
+    def update(self, num, text):
+        number = int(num) - 1
+        self.file_list[number] = text
+
+    def delete(self, num):
+        number = int(num) - 1
+        self.file_list.pop(number)
+
+    def save(self):
+        save_question = input("Сохранить изменения? Y/Да N/Нет\n")
+        if save_question == 'y':
+            with open('list_of_entries.txt', 'w', -1, 'utf-8') as edit_line:
+                for todo in self.file_list:
+                    edit_line.write(todo + '\n')
+                print("Изменения сохранены!")
+        elif save_question == 'n':
+            print("Данные не сохранены!")
+
+
+    def list(self):
+        with open('list_of_entries.txt', encoding='utf-8') as write_line:
+            self.file_list = write_line.read().split('\n')
+            self.file_list.pop(-1)
+
+
 command_help = ("\nadd 'текст задачи в ковычках' - Добавлет новую задачу.\n"
                 "\nedit number 'text' - Изменяет задачу по номеру.\n"
                 "\nremove number - Удаляет задачу из списка по номеру.\n"
                 "\nremove all - Удаляет все задачи из списка.")
 
 
-def todos_list():
-    with open('list_of_entries.txt', encoding='utf-8') as write_line:
-        todos = write_line.read().split('\n')
-        todos.pop(-1)
-    return todos
+todos_in_file = TodoManager()
+todos_in_file.list()
 
 
 def write_entries():
     if os.path.isfile("list_of_entries.txt"):
         if os.stat('list_of_entries.txt').st_size != 0:
-            todos = todos_list()
             index = 1
             print("Весь список дел:")
-            for todo in todos:
+            for todo in todos_in_file.file_list:
                 print(str(index) + "." + todo)
                 index += 1
-
         else:
             print("Пока что нет записей...")
     return
@@ -31,29 +60,25 @@ def write_entries():
 
 def add():
     entries_text = sys.argv[2]
-    todos = todos_list()
     repeat_todo = 0
-    for todo in todos:
+    for todo in todos_in_file.file_list:
         if todo == entries_text:
             repeat_todo = 1
     if repeat_todo == 1:
         print("ОШИБКА! ТАКАЯ ЗАДАЧА УЖЕ СУЩЕСТВУЕТ!")
     else:
-        with open('list_of_entries.txt', 'a+', -1, 'utf-8') as entries_add:
-            entries_add.write(entries_text + "\n")
+        todos_in_file.add(entries_text)
         print("Задача успешно добавлена!")
+        todos_in_file.save()
+
     return
 
 
 def edit(number, text):
     if os.stat('list_of_entries.txt').st_size != 0:
-        todos = todos_list()
-        number = int(number) - 1
-        todos[number] = text
-        with open('list_of_entries.txt', 'w', -1, 'utf-8') as edit_line:
-            for todo in todos:
-                edit_line.write(todo + '\n')
-        print("ЗАДАНИЕ", number + 1, "ИЗМЕНЕНО!")
+        todos_in_file.update(number, text)
+        print("ЗАДАНИЕ", number, "ЗАМЕНЕНО!")
+        todos_in_file.save()
     else:
         print("НЕВЕРНАЯ КОМАНДА! В СПИСКЕ НЕТ ЗАДАЧ!")
         print(command_help)
@@ -66,16 +91,13 @@ def remove(number):
         with open('list_of_entries.txt', 'w', -1, 'utf-8'):
             print("Список дел очищен!")
     else:
-        todos = todos_list()
         if os.stat('list_of_entries.txt').st_size != 0:
             if sys.argv[2].isdigit() == bool(True):
-                if len(todos) >= int(sys.argv[2]):
-                    number = int(number) - 1
-                    todos.pop(number)
-                    with open('list_of_entries.txt', 'w', -1, 'utf-8') as edit_line:
-                        for todo in todos:
-                            edit_line.write(todo + '\n')
-                    print("Задача номер", number + 1, "успешно удалена!")
+                if len(todos_in_file.file_list) >= int(sys.argv[2]):
+                    todos_in_file.delete(number)
+                    print("Задача номер", number, "успешно удалена!")
+                    todos_in_file.save()
+
                 else:
                     print("НЕВЕРНАЯ КОМАНДА! ЗАДАЧА С ТАКИМ НОМЕРОМ НЕ СУЩЕСТВУЕТ!")
                     print(command_help)
@@ -108,10 +130,9 @@ else:
         add()
 
     elif commands == "edit":
-        todos = todos_list()
         if sys.argv[2].isdigit() == bool(True):
 
-            if len(todos) >= int(sys.argv[2]):
+            if len(todos_in_file.file_list) >= int(sys.argv[2]):
                 if sys.argv[2] != sys.argv[-1]:
                     edit(sys.argv[2], sys.argv[3])
 
