@@ -5,24 +5,38 @@ import os
 class TodoManager:
 
     def __init__(self):
-        with open('list_of_entries.txt', encoding='utf-8') as write_line:
-            self.file_list = write_line.read().split('\n')
-            self.file_list.pop(-1)
+        if os.path.isfile("list_of_entries.txt"):
+            if os.stat('list_of_entries.txt').st_size != 0:
+                self.ok = 1
+                with open('list_of_entries.txt', encoding='utf-8') as write_line:
+                    self.file_list = write_line.read().split('\n')
+                    self.file_list.pop(-1)
+            else:
+                self.ok = 0
+                self.file_list = []
+                print("Пока что нет записей...")
 
     def add(self, text):
         self.file_list.append(text)
 
     def update(self, index, text):
-        self.file_list[index] = text
+        if len(self.file_list) >= index:
+            self.file_list[index] = text
+            return True
+        else:
+            return False
 
     def delete(self, index):
-        self.file_list.pop(index)
+        if len(self.file_list) >= index:
+            self.file_list.pop(index)
+            return True
+        else:
+            return False
 
     def save(self):
         with open('list_of_entries.txt', 'w', -1, 'utf-8') as edit_line:
             for todo in self.file_list:
                 edit_line.write(todo + '\n')
-            return True
 
     def list(self):
         return self.file_list
@@ -46,15 +60,13 @@ def save_ask():
 
 
 def write_entries():
-    if os.path.isfile("list_of_entries.txt"):
-        if os.stat('list_of_entries.txt').st_size != 0:
-            index = 1
-            print("Весь список дел:")
-            for todo in todos_in_file.file_list:
-                print(str(index) + "." + todo)
-                index += 1
-        else:
-            print("Пока что нет записей...")
+    if todos_in_file.ok:
+        index = 1
+        print("Весь список дел:")
+        for todo in todos_in_file.file_list:
+            print(str(index) + "." + todo)
+            index += 1
+
     return
 
 
@@ -64,6 +76,7 @@ def add():
     for todo in todos_in_file.file_list:
         if todo == entries_text:
             repeat_todo = 1
+            break
     if repeat_todo == 1:
         print("ОШИБКА! ТАКАЯ ЗАДАЧА УЖЕ СУЩЕСТВУЕТ!")
     else:
@@ -73,23 +86,33 @@ def add():
             todos_in_file.save()
             print("Изменения сохранены!")
             print("Задача успешно добавлена!")
-        elif save_question != 'y':
+        else:
             print("Данные не сохранены!")
 
     return
 
 
 def edit(number, text):
-    if os.stat('list_of_entries.txt').st_size != 0:
-        index = int(number) - 1
-        todos_in_file.update(index, text)
-        print("ЗАДАНИЕ", number, "ЗАМЕНЕНО!")
-        save_ask()
-
+    if number.isdigit():
+        if number != text:
+            if todos_in_file.ok:
+                index = int(number) - 1
+                todos_in_file.update(index, text)
+                if todos_in_file.update(index, text):
+                    print("ЗАДАНИЕ", number, "ЗАМЕНЕНО!")
+                    save_ask()
+                else:
+                    print("НЕВЕРНАЯ КОМАНДA! ЗАДАЧА С ТАКИМ НОМЕРОМ НЕ СУЩЕСТВУЕТ")
+                    print(command_help)
+            else:
+                print("ОШИБКА! СПИСОК ЗАДАЧ ПУСТ!")
+                print(command_help)
+        else:
+            print("НЕВЕРНАЯ КОМАНДA!")
+            print(command_help)
     else:
-        print("НЕВЕРНАЯ КОМАНДА! В СПИСКЕ НЕТ ЗАДАЧ!")
+        print("НЕВЕРНАЯ КОМАНДA!")
         print(command_help)
-
     return
 
 
@@ -98,14 +121,13 @@ def remove(number):
         with open('list_of_entries.txt', 'w', -1, 'utf-8'):
             print("Список дел очищен!")
     else:
-        if os.stat('list_of_entries.txt').st_size != 0:
-            if sys.argv[2].isdigit() == bool(True):
-                if len(todos_in_file.file_list) >= int(sys.argv[2]):
-                    index = int(number) - 1
-                    todos_in_file.delete(index)
+        if todos_in_file.ok:
+            if sys.argv[2].isdigit():
+                index = int(number) - 1
+                todos_in_file.delete(index)
+                if todos_in_file.delete(index):
                     print("Задача номер", number, "успешно удалена!")
                     save_ask()
-
                 else:
                     print("НЕВЕРНАЯ КОМАНДА! ЗАДАЧА С ТАКИМ НОМЕРОМ НЕ СУЩЕСТВУЕТ!")
                     print(command_help)
@@ -138,21 +160,10 @@ else:
         add()
 
     elif commands == "edit":
-        if sys.argv[2].isdigit() == bool(True):
-
-            if len(todos_in_file.file_list) >= int(sys.argv[2]):
-                if sys.argv[2] != sys.argv[-1]:
-                    edit(sys.argv[2], sys.argv[3])
-
-                else:
-                    print("НЕВЕРНАЯ КОМАНДA!")
-                    print(command_help)
-
-            else:
-                print("НЕВЕРНАЯ КОМАНДA! ЗАДАЧА С ТАКИМ НОМЕРОМ НЕ СУЩЕСТВУЕТ")
-                print(command_help)
+        if sys.argv[2] != sys.argv[-1]:
+            edit(sys.argv[2], sys.argv[3])
         else:
-            print("НЕВЕРНАЯ КОМАНДA!")
+            print("НЕВЕРНАЯ КОМАНДA! ВВЕДИТЕ ТЕКСТ!")
             print(command_help)
 
     elif commands == "remove":
