@@ -20,14 +20,14 @@ class TodoManager:
         self.file_list.append(text)
 
     def update(self, index, text):
-        if len(self.file_list) >= index:
+        if len(self.file_list) > index:
             self.file_list[index] = text
             return True
         else:
             return False
 
     def delete(self, index):
-        if len(self.file_list) >= index:
+        if len(self.file_list) > index:
             self.file_list.pop(index)
             return True
         else:
@@ -77,7 +77,7 @@ def add():
         if todo == entries_text:
             repeat_todo = 1
             break
-    if repeat_todo == 1:
+    if repeat_todo:
         print("ОШИБКА! ТАКАЯ ЗАДАЧА УЖЕ СУЩЕСТВУЕТ!")
     else:
         todos_in_file.add(entries_text)
