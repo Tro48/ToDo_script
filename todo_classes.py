@@ -22,8 +22,8 @@ class TodoManager:
         if len(self.file_list) > index:
             self.file_list[index] = text
             return True
-        else:
-            return False
+
+        return False
 
     def delete(self, index):
         if len(self.file_list) > index:

@@ -1,6 +1,5 @@
 import sys
-from todo_classes import *
-
+from todo_classes import TodoManager
 
 command_help = ("\nadd 'текст задачи в ковычках' - Добавлет новую задачу.\n"
                 "\nedit number 'text' - Изменяет задачу по номеру.\n"
