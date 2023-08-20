@@ -14,6 +14,11 @@ class TodoManager:
                 self.ok = 0
                 self.file_list = []
                 print("Пока что нет записей...")
+        else:
+            with open('list_of_entries.txt', 'w', -1, 'utf-8') as file:
+                self.ok = 0
+                self.file_list = []
+                print("Пока что нет записей...")
 
     def add(self, text):
         self.file_list.append(text)
