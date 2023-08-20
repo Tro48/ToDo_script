@@ -6,17 +6,17 @@ class TodoManager:
     def __init__(self):
         if os.path.isfile("list_of_entries.txt"):
             if os.stat('list_of_entries.txt').st_size != 0:
-                self.ok = 1
+                self.not_empty = True
                 with open('list_of_entries.txt', encoding='utf-8') as write_line:
                     self.file_list = write_line.read().split('\n')
                     self.file_list.pop(-1)
             else:
-                self.ok = 0
+                self.not_empty = False
                 self.file_list = []
                 print("Пока что нет записей...")
         else:
             with open('list_of_entries.txt', 'w', -1, 'utf-8') as file:
-                self.ok = 0
+                self.not_empty = False
                 self.file_list = []
                 print("Пока что нет записей...")
 
