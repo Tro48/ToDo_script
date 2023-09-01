@@ -103,17 +103,10 @@ def remove(todos_in_file, number):
 
 
 command_by_name = {
-    'help': help,
-    'add': add,
-    'edit': edit,
-    'remove': remove,
-    # 'argument': {
-    #     'help': 0,
-    #     'add': 1,
-    #     'edit': 2,
-    #     'remove': 2
-    #
-    # }
+    'help': (help, 0),
+    'add': (add, 1),
+    'edit': (edit, 2),
+    'remove': (remove, 1),
 }
 
 
@@ -124,9 +117,6 @@ def main():
         write_entries(todos_in_file)
         return
 
-    elif len(sys.argv) < 3:
-        help()
-
     command_name = sys.argv[1]
 
     if command_name not in command_by_name:
@@ -134,13 +124,21 @@ def main():
         help()
         return
 
-    if 4 < len(sys.argv):
-        print("НЕВЕРНАЯ КОМАНДA! после 'текста' не должно быть символов!")
+    func, args_number = command_by_name[command_name]
+    args = sys.argv[2:]
+
+    if args_number != len(args):
+        print("КОММАНДА ВВЕДЕНА НЕВЕРНО!")
         help()
+        return
+
+    elif command_name == "help":
+        help()
+        return
+
     else:
-        func = command_by_name[command_name]
-        args = sys.argv[2:]
         func(todos_in_file, *args)
+        return
 
 
 if __name__ == '__main__':
