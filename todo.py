@@ -2,7 +2,7 @@ import sys
 from todo_classes import TodoManager
 
 
-def help():
+def help(_):
     print("\nadd 'текст задачи в ковычках' - Добавлет новую задачу.\n"
           "\nedit number 'text' - Изменяет задачу по номеру.\n"
           "\nremove number - Удаляет задачу из списка по номеру.\n"
@@ -129,10 +129,6 @@ def main():
 
     if args_number != len(args):
         print("КОММАНДА ВВЕДЕНА НЕВЕРНО!")
-        help()
-        return
-
-    elif command_name == "help":
         help()
         return
 
